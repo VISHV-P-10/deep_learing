@@ -1,0 +1,306 @@
+# Self Attention 
+
+
+## 1. Why this topic matters
+
+* If you **deeply understand Self Attention**, you automatically understand **Transformers**.
+* If you understand Transformers → **LLMs, Generative AI, ChatGPT‑style models** become much easier.
+* Self Attention exists mainly to solve a **major weakness of traditional word embeddings**.
+
+
+---
+
+## 2. Core Requirement of any NLP System
+
+### Question:
+
+What is the **most important requirement** for any NLP application?
+
+### Answer:
+ **Convert words into numbers** (Vectorization)
+
+Why?
+
+* Computers do **not understand words**
+* Computers **only understand numbers**
+
+Examples of NLP tasks:
+
+* Sentiment Analysis
+* Named Entity Recognition (NER)
+* Machine Translation
+
+All of them take **text as input → numbers inside the model**
+
+---
+
+## 3. Early Word Representation Techniques
+
+### 3.1 One‑Hot Encoding 
+
+**Idea:**
+
+* Create a vocabulary of all unique words
+* Represent each word using a binary vector
+
+**Example:**
+Vocabulary = {mat, cat, rat}
+
+| Word | Vector |
+| ---- | ------ |
+| mat  | 1 0 0  |
+| cat  | 0 1 0  |
+| rat  | 0 0 1  |
+
+Sentence: `mat cat mat`
+
+Numeric form:
+
+```
+[1 0 0] [0 1 0] [1 0 0]
+```
+
+**Problems:**
+
+* Very large vectors
+* No semantic meaning
+* mat & cat are as different as mat & airplane
+
+---
+
+### 3.2 Bag of Words (BoW) 
+
+**Improvement over One‑Hot**
+
+**Idea:**
+
+* Count frequency of words
+
+Sentence: `mat cat mat`
+
+| Word | Count |
+| ---- | ----- |
+| mat  | 2     |
+| cat  | 1     |
+| rat  | 0     |
+
+**Problems:**
+
+* Ignores word order
+* Still no meaning
+
+---
+
+### 3.3 TF‑IDF 
+
+* Improves BoW by reducing importance of common words
+* Still:
+
+  * No semantic understanding
+  * No context
+
+---
+
+## 4. Word Embeddings (Game Changer)
+
+### What are Word Embeddings?
+
+* Dense vectors
+* Capture **semantic meaning**
+* Similar words → similar vectors
+
+Each word → **N‑dimensional vector**
+
+* N = 64, 128, 256, 512 etc.
+
+Example:
+
+```
+King  → [6.2, 1.3, 0.9, ...]
+Queen → [6.0, 1.2, 1.1, ...]
+Cricketer → [0.2, 7.5, 1.8, ...]
+```
+
+King & Queen are close
+Cricketer is far away
+
+---
+
+## 5. Geometric Intuition of Embeddings 
+
+Imagine each dimension represents an **abstract property**:
+
+| Dimension | Meaning (example) |
+| --------- | ----------------- |
+| Dim 1     | Royalty           |
+| Dim 2     | Athleticism       |
+| Dim 3     | Human             |
+
+| Word      | Royalty | Athletic | Human |
+| --------- | ------- | -------- | ----- |
+| King      | High    | Low      | High  |
+| Queen     | High    | Low      | High  |
+| Cricketer | Low     | High     | High  |
+
+> These meanings are **not explicitly known** — neural networks learn them implicitly.
+
+---
+
+## 6. Hidden Problem with Word Embeddings 
+
+### Key Issue: **Static Embeddings**
+
+* Each word has **only ONE vector**
+* Same vector used in **every sentence**
+
+### Example: "Apple" 
+
+Two meanings:
+
+1. Fruit
+2. Technology company
+
+Word embedding captures **average meaning**, not exact meaning.
+
+---
+
+## 7. Apple Example – Why Static Embeddings Fail
+
+### Training data:
+
+* 9000 sentences → Apple as fruit
+* 1000 sentences → Apple as company
+
+Resulting embedding:
+
+* High "taste" dimension
+* Low "technology" dimension
+
+### Diagram (conceptual):
+
+```
+Technology ↑
+          |
+          |
+          |     Apple (company heavy data)
+          |
+          |
+          |
+----------+----------------------→ Taste
+          |
+          | Apple (fruit heavy data)
+```
+
+Embedding depends on **dataset bias**.
+
+---
+
+## 8. Real NLP Failure Example 
+
+Sentence:
+
+> "Apple launched a new phone while I was eating an orange"
+
+Static embedding for **Apple**:
+
+* Assumes fruit 
+
+Correct meaning in sentence:
+
+* Technology company 
+
+Model gets confused because:
+
+* Apple & Orange appear together
+
+---
+
+## 9. What We Actually Need 
+
+ **Contextual Embeddings**
+
+Meaning:
+
+* Embedding should change based on **surrounding words**
+* Apple + phone + launch → company
+* Apple + eat + sweet → fruit
+
+Dynamic, not static.
+
+---
+
+## 10. Enter Self Attention 
+
+### What is Self Attention?
+
+> **Self Attention is a mechanism that converts static word embeddings into contextual embeddings.**
+
+### How it works (high level):
+
+* Input: embeddings of **all words in a sentence**
+* Output: new embeddings for **each word**, adjusted using context
+
+---
+
+## 11. Self Attention – Functional View 
+
+### Input:
+
+```
+[Apple] [launched] [new] [phone] [orange]
+```
+
+### Inside the Self Attention block:
+
+* Words interact with **each other**
+* Important words influence others more
+
+### Output:
+
+```
+[Apple*] [launched*] [new*] [phone*] [orange*]
+```
+
+`* = context‑aware embeddings`
+
+---
+
+## 12. Why Self Attention is Powerful 
+
+* Understands **context**
+* Resolves ambiguity
+* Enables:
+
+  * Machine Translation
+  * Question Answering
+  * Text Summarization
+  * LLMs
+
+This is the **heart of Transformers**.
+
+---
+
+## 13. One‑Line Exam / Interview Summary 
+
+> **Self Attention is a mechanism that takes static word embeddings as input and produces contextual embeddings by understanding how words relate to each other in a sentence.**
+
+---
+
+## 14. What’s Next?
+
+Next lectures will explain:
+
+* Query, Key, Value vectors
+* Attention score calculation
+* Scaled Dot‑Product Attention
+
+ This is where math + intuition collide (in a good way).
+
+---
+
+### Daily Revision Tip 
+
+* Revise **Sections 6–10 daily**
+* Apple example =  memory anchor
+
+You’re building **Transformer intuition**, not just notes 
